@@ -23,6 +23,7 @@ public:
 
     void sendPacket() {
         while (!this->endflag) {
+            if (this->address_set == nullptr) return;
             Dot11Deauthentication deauth;
             RadioTap radio = RadioTap();
             deauth.addr2(this->target);

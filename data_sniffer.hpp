@@ -56,7 +56,17 @@ public:
         return false;
     }
 
+    void initChannel() {
+        int ch = 1;
+        while ((ch++) <= 13) {
+            string cmd = "iwconfig " + this->iface_name + " channel " + to_string(ch);
+            system(cmd.c_str());
+        }
+
+    }
+
     void dataSniff() {
+        initChannel();
         while (!this->endflag) {
             Packet pk = this->sniffer->next_packet();
 
