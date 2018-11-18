@@ -2,32 +2,35 @@
 #define __DATA_SNIFFER__
 
 #include <iostream>
+#include <map>
+#include <set>
 #include <thread>
 #include <tins/tins.h>
 
 using namespace std;
 using namespace Tins;
 
-enum FRAME_DRIECTION {
-    TO_AP = 1,
-    FROM_AP = 2,
-    OTHER = 3
-};
-
 class DataSniffer {
 private:
     string iface_name;
     HWAddress<6> myMac;
-    HWAddress<6> target;
+    string targetSSID;
     Sniffer *sniffer;
     set<HWAddress<6>> *address_set;
+    set<HWAddress<6>> *targetSet;
     bool endflag = false;
+    enum FRAME_DRIECTION {
+        TO_AP = 1,
+        FROM_AP = 2,
+        OTHER = 3
+    };
 public:
-    explicit DataSniffer(const string &iface, const string &my, const string &target) {
+    DataSniffer(map<string, set<HWAddress<6>>> *targetMap, const string &iface, const string &my, const string &targetSSID) {
         this->iface_name = iface;
         this->myMac = NetworkInterface(my).hw_address();
-        this->target = HWAddress<6>(target);
-        this->address_set = new set<HWAddress<6>>();
+        this->targetSSID = targetSSID;
+        this->targetSet = &(*targetMap)[this->targetSSID];
+        this->address_set = new set<HWAddress<6>>;
 
         SnifferConfiguration config;
 
@@ -49,24 +52,14 @@ public:
 
     bool isTargetAssociated(FRAME_DRIECTION fd, Dot11 *dot11) {
         if (fd == TO_AP) {
-            return dot11->addr1() == this->target;
+            return this->targetSet->find(dot11->addr1()) != this->targetSet->end();
         } else if (fd == FROM_AP){
-            return dot11->find_pdu<Dot11Data>()->addr2() == this->target;
+            return this->targetSet->find(dot11->find_pdu<Dot11Data>()->addr2()) != this->targetSet->end();
         }
         return false;
     }
 
-    void initChannel() {
-        int ch = 1;
-        while ((ch++) <= 13) {
-            string cmd = "iwconfig " + this->iface_name + " channel " + to_string(ch);
-            system(cmd.c_str());
-        }
-
-    }
-
     void dataSniff() {
-        initChannel();
         while (!this->endflag) {
             Packet pk = this->sniffer->next_packet();
 

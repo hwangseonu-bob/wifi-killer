@@ -3,6 +3,7 @@
 #include <vector>
 #include "data_sniffer.hpp"
 #include "deauth_sender.hpp"
+#include "beacon_sniffer.hpp"
 
 using namespace std;
 using namespace Tins;
@@ -26,7 +27,7 @@ NetworkInterface selectInterface() {
 
 string inputTarget() {
     string target;
-    cout << "input target bssid > ";
+    cout << "input target ssid > ";
     cin >> target;
     return target;
 }
@@ -38,12 +39,15 @@ int main() {
     NetworkInterface iface = selectInterface();
     string target = inputTarget();
 
-    DataSniffer *sniffer = new DataSniffer(iface.name(), "wlp2s0", target);
-    DeauthSender *sender = new DeauthSender(sniffer->getSet(), iface.name(), target);
+    BeaconSniffer *beaconSniffer = new BeaconSniffer(iface.name());
+    DataSniffer *dataSniffer = new DataSniffer(beaconSniffer->getMap(), iface.name(), "wlp2s0", target);
+    DeauthSender *sender = new DeauthSender(beaconSniffer->getMap(), dataSniffer->getSet(), iface.name(), target);
 
-    thread sniffThread = thread(&DataSniffer::dataSniff, sniffer);
+    thread beaconSniff = thread(&BeaconSniffer::beaconSniff, beaconSniffer);
+    thread dataSniff = thread(&DataSniffer::dataSniff, dataSniffer);
     thread sendThread = thread(&DeauthSender::sendPacket, sender);
 
-    sniffThread.join();
+    beaconSniff.join();
+    dataSniff.join();
     sendThread.join();
 }
