@@ -11,16 +11,14 @@ using namespace Tins;
 class DeauthSender {
 private:
     string iface_name;
-    string targetSSID;
     set<HWAddress<6>> *address_set;
     set<HWAddress<6>> *target_set;
     bool endflag = false;
 public:
-    DeauthSender(map<string, set<HWAddress<6>>> *target_set, set<HWAddress<6>> *set, const string &iface, const string &targetSSID) {
+    DeauthSender(set<HWAddress<6>> *target_set, set<HWAddress<6>> *set, const string &iface) {
         this->address_set = set;
         this->iface_name = iface;
-        this->targetSSID = targetSSID;
-        this->target_set = &(*target_set)[this->targetSSID];
+        this->target_set = target_set;
     }
 
     void sendPacket() {

@@ -14,10 +14,9 @@ class DataSniffer {
 private:
     string iface_name;
     HWAddress<6> myMac;
-    string targetSSID;
     Sniffer *sniffer;
     set<HWAddress<6>> *address_set;
-    set<HWAddress<6>> *targetSet;
+    set<HWAddress<6>> *target_set;
     bool endflag = false;
     enum FRAME_DRIECTION {
         TO_AP = 1,
@@ -25,11 +24,10 @@ private:
         OTHER = 3
     };
 public:
-    DataSniffer(map<string, set<HWAddress<6>>> *targetMap, const string &iface, const string &my, const string &targetSSID) {
+    DataSniffer(set<HWAddress<6>> *target, const string &iface, const string &my) {
         this->iface_name = iface;
         this->myMac = NetworkInterface(my).hw_address();
-        this->targetSSID = targetSSID;
-        this->targetSet = &(*targetMap)[this->targetSSID];
+        this->target_set = target;
         this->address_set = new set<HWAddress<6>>;
 
         SnifferConfiguration config;
@@ -52,9 +50,9 @@ public:
 
     bool isTargetAssociated(FRAME_DRIECTION fd, Dot11 *dot11) {
         if (fd == TO_AP) {
-            return this->targetSet->find(dot11->addr1()) != this->targetSet->end();
+            return this->target_set->find(dot11->addr1()) != this->target_set->end();
         } else if (fd == FROM_AP){
-            return this->targetSet->find(dot11->find_pdu<Dot11Data>()->addr2()) != this->targetSet->end();
+            return this->target_set->find(dot11->find_pdu<Dot11Data>()->addr2()) != this->target_set->end();
         }
         return false;
     }

@@ -12,13 +12,18 @@ using namespace Tins;
 class BeaconSniffer {
 private:
     string iface_name;
+    string target;
+    int ch;
     Sniffer *sniffer;
-    map<string, set<HWAddress<6>>> *address_map;
+    set<HWAddress<6>> *address_set;
     bool endflag = false;
+    bool chflag = true;
+
 public:
-    explicit BeaconSniffer(const string &iface) {
+    explicit BeaconSniffer(const string &iface, const string &target) {
+        this->target = target;
         this->iface_name = iface;
-        this->address_map = new map<string, set<HWAddress<6>>>();
+        this->address_set = new set<HWAddress<6>>();
 
         SnifferConfiguration config;
 
@@ -31,14 +36,14 @@ public:
 
     void chHopping() {
         static int ch = 1;
-        cout << ch << endl;
-        string cmd = "iwconfig " + this->iface_name + " channel " + to_string(ch++);
+        string cmd = "sudo iwconfig " + this->iface_name + " channel " + to_string(ch++);
         system(cmd.c_str());
-        if (ch == 13) ch = 1;
+        if (ch >= 14) ch = 1;
     }
 
     void beaconSniff() {
         while (!this->endflag) {
+            if (this->chflag) this->chHopping();
             Packet pk = this->sniffer->next_packet();
 
             if (!pk.pdu()) continue;
@@ -47,22 +52,19 @@ public:
             auto *beacon = dot11->find_pdu<Dot11Beacon>();
             if (!beacon) continue;
 
-            auto iter = address_map->find(beacon->ssid());
-
-            if(iter == address_map->end()){
-                set<HWAddress<6>> temp;
-                temp.emplace(beacon->addr2());
-                (*address_map)[beacon->ssid()] = temp;
-            }else{
-                set<HWAddress<6>> temp = (*address_map)[beacon->ssid()];
-                temp.emplace(beacon->addr2());
-                (*address_map)[beacon->ssid()] = temp;
+            if (beacon->ssid() == this->target) {
+                this->address_set->emplace(beacon->addr2());
+                this->chflag = false;
             }
         }
     }
 
-    map<string, set<HWAddress<6>>>* getMap() {
-        return this->address_map;
+    set<HWAddress<6>>* getAddressSet() {
+        return this->address_set;
+    }
+
+    int getCh() {
+        return this->ch;
     }
 };
 

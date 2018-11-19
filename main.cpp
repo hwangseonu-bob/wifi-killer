@@ -39,9 +39,9 @@ int main() {
     NetworkInterface iface = selectInterface();
     string target = inputTarget();
 
-    BeaconSniffer *beaconSniffer = new BeaconSniffer(iface.name());
-    DataSniffer *dataSniffer = new DataSniffer(beaconSniffer->getMap(), iface.name(), "wlp2s0", target);
-    DeauthSender *sender = new DeauthSender(beaconSniffer->getMap(), dataSniffer->getSet(), iface.name(), target);
+    BeaconSniffer *beaconSniffer = new BeaconSniffer(iface.name(), target);
+    DataSniffer *dataSniffer = new DataSniffer(beaconSniffer->getAddressSet(), iface.name(), "wlp2s0");
+    DeauthSender *sender = new DeauthSender(beaconSniffer->getAddressSet(), dataSniffer->getSet(), iface.name());
 
     thread beaconSniff = thread(&BeaconSniffer::beaconSniff, beaconSniffer);
     thread dataSniff = thread(&DataSniffer::dataSniff, dataSniffer);
