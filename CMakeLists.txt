@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_library(TINS_LIBRARY tins)
 find_library(PTHREAD_LIBRARY pthread)
-set(SOURCE_FILES main.cpp)
+set(SOURCE_FILES main.cpp main.cpp)
 
 
 add_executable(wifi-killer ${SOURCE_FILES})
