@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_library(TINS_LIBRARY tins)
 find_library(PTHREAD_LIBRARY pthread)
-set(SOURCE_FILES main.cpp safe_queue.hpp data_sniffer.hpp deauth_sender.hpp beacon_sniffer.hpp)
+set(SOURCE_FILES main.cpp)
 
 
 add_executable(wifi-killer ${SOURCE_FILES})
