@@ -35,7 +35,7 @@ string input(const string& msg) {
 
 int main() {
     auto sendInterface = selectInterfaces("select network interface to send > ");
-    auto inetInterface = selectInterfaces("select network interface you wifi > ");
+    auto inetInterface = selectInterfaces("select network interface use wifi > ");
     selectChannel(sendInterface.name());
 
     string bssid = input("input target bssid > ");
