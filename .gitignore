@@ -1,6 +1,21 @@
+https://www.gitignore.io/api/linux,ma
+# Created by https://www.gitignore.io/api/linux,macos,python,windows,virtualenv,pycharm+all
+# Edit at https://www.gitignore.io/?templates=linux,macos,python,windows,virtualenv,pycharm+all
 
-# Created by https://www.gitignore.io/api/macos,python,pycharm+all
-# Edit at https://www.gitignore.io/?templates=macos,python,pycharm+all
+### Linux ###
+*~
+
+# temporary files which can be created if a process still has a handle open of a deleted file
+.fuse_hidden*
+
+# KDE directory preferences
+.directory
+
+# Linux trash folder which might appear on any partition or disk
+.Trash-*
+
+# .nfs files are created when an open file is removed but is still being accessed
+.nfs*
 
 ### macOS ###
 # General
@@ -242,4 +257,41 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# End of https://www.gitignore.io/api/macos,python,pycharm+all
+### VirtualEnv ###
+# Virtualenv
+# http://iamzed.com/2009/05/07/a-primer-on-virtualenv/
+[Bb]in
+[Ii]nclude
+[Ll]ib
+[Ll]ib64
+[Ll]ocal
+[Ss]cripts
+pyvenv.cfg
+pip-selfcheck.json
+
+### Windows ###
+# Windows thumbnail cache files
+Thumbs.db
+ehthumbs.db
+ehthumbs_vista.db
+
+# Dump file
+*.stackdump
+
+# Folder config file
+[Dd]esktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# Windows Installer files
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+
+# Windows shortcuts
+*.lnk
+
+# End of https://www.gitignore.io/api/linux,macos,python,windows,virtualenv,pycharm+allcos,python,windows,virtualenv,pycharm+all
